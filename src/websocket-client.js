@@ -11,6 +11,10 @@
  * webSocketClient.send("Hello!");
  * // Receive is asynchronous.
  * console.log(await webSocketClient.receive());
+ * // See if there are any more messages received.
+ * if (webSocketClient.dataAvailable !== 0) {
+ *     console.log(await webSocketClient.receive());
+ * }
  * // Close the connection.
  * await webSocketClient.disconnect();
  */
@@ -21,9 +25,6 @@ export default class WebSocketClient {
 
     /** @private */
     _closeEvent: ?CloseEvent;
-    
-    // The following data structures enable the asynchronous operation 
-    // of receive() and _setupListenersOnConnect().
 
     /** @private */
     _receiveCallbacksQueue: Array<{ resolve: (data: any) => void, reject: (reason: any) => void }>;
@@ -35,12 +36,10 @@ export default class WebSocketClient {
     constructor() {
         this._reset();
     }
-
-    /* public properties */
     
     /**
-     * Whether a connection is currently active.
-     * @returns true if the connection is active.
+     * Whether a connection is currently open.
+     * @returns true if the connection is open.
      */
     get connected(): boolean {
         // Checking != null also checks against undefined.
@@ -71,6 +70,7 @@ export default class WebSocketClient {
 
     /**
      * Send data through the websocket.
+     * Must be connected. See {@link #connected}.
      */
     send(data: any) {
         if (!this.connected) {
@@ -106,7 +106,7 @@ export default class WebSocketClient {
     /**
      * Initiates the close handshake if there is an active connection.
      * Returns a promise that will never reject.
-     * The promise resolves once the WebSocket is closed.
+     * The promise resolves once the WebSocket connection is closed.
      */
     async disconnect(code?: number, reason?: string): Promise<?CloseEvent> {
         if (!this.connected) {

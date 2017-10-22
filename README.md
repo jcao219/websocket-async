@@ -25,21 +25,25 @@ await webSocketClient.connect("ws://www.example.com/", 9000);
 webSocketClient.send("Hello!");
 // Receive is asynchronous.
 console.log(await webSocketClient.receive());
+// See if there are any more messages received.
+if (webSocketClient.dataAvailable !== 0) {
+    console.log(await webSocketClient.receive());
+}
 // Close the connection.
 await webSocketClient.disconnect();
 ```
 
 ### connected
 
-Whether a connection is currently active.
+Whether a connection is currently open.
 
-Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** true if the connection is active.
+Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** true if the connection is open.
 
 ### dataAvailable
 
 The number of messages available to receive.
 
-Returns **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The number of queued messages that can be retrieved with [WebSocketClient#receive](#websocketclientreceive)
+Returns **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The number of queued messages that can be retrieved with [#receive](#receive)
 
 ### connect
 
@@ -56,6 +60,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 ### send
 
 Send data through the websocket.
+Must be connected. See [#connected](#connected).
 
 **Parameters**
 
@@ -74,7 +79,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 Initiates the close handshake if there is an active connection.
 Returns a promise that will never reject.
-The promise resolves once the WebSocket is closed.
+The promise resolves once the WebSocket connection is closed.
 
 **Parameters**
 
