@@ -8,5 +8,12 @@
         } ], 
         "flow" 
     ],
-    "plugins": [ "external-helpers" ]
+    "plugins": [ 
+        [ "external-helpers" ],
+        [ "transform-runtime", {
+	    "helpers": false,
+	    "polyfill": false,
+	    "regenerator": true,
+	} ] 
+    ]
 }
