@@ -39,9 +39,6 @@ export default class WebSocketClient {
      * Sets up a TCP connection to specified host and port. Resolves when the 
      * connection is established.
      * Can be called again to reconnect, to the same or even a different url.
-     * 
-     * @param {string} url
-     * @param {string} [protocols]
      */
     async connect(url: string, protocols?: string): Promise<void> {
         await this.disconnect();
@@ -55,7 +52,6 @@ export default class WebSocketClient {
 
     /**
      * Send data through the websocket.
-     * @param {*} data 
      */
     send(data: any) {
         if (!this.connected) {
@@ -128,10 +124,10 @@ export default class WebSocketClient {
         await new Promise((resolve, reject) => {
 
             const handleMessage: EventListener = event => {
-                // The following line is a brutally forceful cast!
                 const messageEvent: MessageEvent = ((event: any): MessageEvent);
-                // That was necessary because Flow's libdef's don't contain
+                // The cast was necessary because Flow's libdef's don't contain
                 // a MessageEventListener definition.
+
                 if (this._receiveCallbacksQueue.length !== 0) {
                     this._receiveCallbacksQueue.shift().resolve(messageEvent.data);
                     return;
@@ -143,7 +139,6 @@ export default class WebSocketClient {
             const handleOpen: EventListener = event => {
                 socket.addEventListener('message', handleMessage);
                 socket.addEventListener('close', event => { 
-                    // Another forceful cast!
                     this._closeEvent = ((event: any): CloseEvent);
                     
                     // Whenever a close event fires, the socket is effectively dead.

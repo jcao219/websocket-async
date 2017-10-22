@@ -5,9 +5,14 @@
   "module": "dist/websocket-async.esm.js",
   "browser": "dist/websocket-async.umd.js",
   "author": "Jimmy Cao",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jcao219/websocket-async.git"
+  },
   "license": "MIT",
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "docs": "documentation build src/** -f md -o README.md"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -15,6 +20,7 @@
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-flow": "^6.23.0",
+    "documentation": "^5.3.3",
     "eslint": "^4.9.0",
     "eslint-plugin-flowtype": "^2.39.1",
     "flow-bin": "^0.57.3",
