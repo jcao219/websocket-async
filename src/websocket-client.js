@@ -3,25 +3,35 @@
 /**
  * An asynchronous WebSocket client.
  * @example
- * // Set up connection
+ * // Set up connection.
  * const webSocketClient = new WebSocketClient;
- * // Connect
- * webSocketClient.connect("ws://www.example.com/", 9000);
+ * // Connect.
+ * await webSocketClient.connect("ws://www.example.com/", 9000);
+ * // Send is synchronous.
  * webSocketClient.send("Hello!");
+ * // Receive is asynchronous.
  * console.log(await webSocketClient.receive());
+ * // Close the connection.
  * await webSocketClient.disconnect();
  */
 export default class WebSocketClient {
 
-    /* private members */
+    /** @private */
     _socket: WebSocket;
+
+    /** @private */
     _closeEvent: ?CloseEvent;
     
     // The following data structures enable the asynchronous operation 
     // of receive() and _setupListenersOnConnect().
+
+    /** @private */
     _receiveCallbacksQueue: Array<{ resolve: (data: any) => void, reject: (reason: any) => void }>;
+
+    /** @private */
     _receiveDataQueue: Array<any>;
     
+    /** @public */
     constructor() {
         this._reset();
     }
@@ -30,6 +40,7 @@ export default class WebSocketClient {
     
     /**
      * Whether a connection is currently active.
+     * @returns true if the connection is active.
      */
     get connected(): boolean {
         // Checking != null also checks against undefined.
@@ -38,6 +49,7 @@ export default class WebSocketClient {
     
     /**
      * The number of messages available to receive.
+     * @returns The number of queued messages that can be retrieved with {@link WebSocketClient#receive}
      */
     get dataAvailable(): number {
         return this._receiveDataQueue.length;
@@ -73,6 +85,7 @@ export default class WebSocketClient {
      * Resolves immediately if there is buffered, unreceived data.
      * Otherwise, resolves with the next rececived message, 
      * or rejects if disconnected.
+     * @returns A promise that resolves with the data received.
      */
     async receive(): Promise<any> {
         if (this._receiveDataQueue.length !== 0) {
@@ -94,8 +107,6 @@ export default class WebSocketClient {
      * Initiates the close handshake if there is an active connection.
      * Returns a promise that will never reject.
      * The promise resolves once the WebSocket is closed.
-     * @param {*} code 
-     * @param {*} reason 
      */
     async disconnect(code?: number, reason?: string): Promise<?CloseEvent> {
         if (!this.connected) {

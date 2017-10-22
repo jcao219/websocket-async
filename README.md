@@ -17,12 +17,15 @@ An asynchronous WebSocket client.
 **Examples**
 
 ```javascript
-// Set up connection
+// Set up connection.
 const webSocketClient = new WebSocketClient;
-// Connect
-webSocketClient.connect("ws://www.example.com/", 9000);
+// Connect.
+await webSocketClient.connect("ws://www.example.com/", 9000);
+// Send is synchronous.
 webSocketClient.send("Hello!");
+// Receive is asynchronous.
 console.log(await webSocketClient.receive());
+// Close the connection.
 await webSocketClient.disconnect();
 ```
 
@@ -30,13 +33,13 @@ await webSocketClient.disconnect();
 
 Whether a connection is currently active.
 
-Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** true if the connection is active.
 
 ### dataAvailable
 
 The number of messages available to receive.
 
-Returns **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
+Returns **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The number of queued messages that can be retrieved with [WebSocketClient#receive](#websocketclientreceive)
 
 ### connect
 
@@ -65,7 +68,7 @@ Resolves immediately if there is buffered, unreceived data.
 Otherwise, resolves with the next rececived message, 
 or rejects if disconnected.
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;any>** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;any>** A promise that resolves with the data received.
 
 ### disconnect
 
@@ -75,7 +78,7 @@ The promise resolves once the WebSocket is closed.
 
 **Parameters**
 
--   `code` **any** 
--   `reason` **any** 
+-   `code` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
+-   `reason` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
 Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[CloseEvent](https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent)?>** 
