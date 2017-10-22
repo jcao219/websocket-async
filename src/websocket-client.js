@@ -2,6 +2,14 @@
 
 /**
  * An asynchronous WebSocket client.
+ * @example
+ * // Set up connection
+ * const webSocketClient = new WebSocketClient;
+ * // Connect
+ * webSocketClient.connect("ws://www.example.com/", 9000);
+ * webSocketClient.send("Hello!");
+ * console.log(await webSocketClient.receive());
+ * await webSocketClient.disconnect();
  */
 export default class WebSocketClient {
 
@@ -36,9 +44,8 @@ export default class WebSocketClient {
     }
 
     /**
-     * Sets up a TCP connection to specified host and port. Resolves when the 
-     * connection is established.
-     * Can be called again to reconnect, to the same or even a different url.
+     * Sets up a WebSocket connection to specified url. Resolves when the 
+     * connection is established. Can be called again to reconnect to any url.
      */
     async connect(url: string, protocols?: string): Promise<void> {
         await this.disconnect();

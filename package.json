@@ -12,7 +12,7 @@
   "license": "MIT",
   "scripts": {
     "build": "rollup -c",
-    "docs": "documentation build src/** -f md -o README.md"
+    "docs": "documentation build src/** -f md -o README.md && documentation build src/** -f html -o docs"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

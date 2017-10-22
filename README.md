@@ -14,6 +14,18 @@
 
 An asynchronous WebSocket client.
 
+**Examples**
+
+```javascript
+// Set up connection
+const webSocketClient = new WebSocketClient;
+// Connect
+webSocketClient.connect("ws://www.example.com/", 9000);
+webSocketClient.send("Hello!");
+console.log(await webSocketClient.receive());
+await webSocketClient.disconnect();
+```
+
 ### connected
 
 Whether a connection is currently active.
@@ -28,9 +40,8 @@ Returns **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refer
 
 ### connect
 
-Sets up a TCP connection to specified host and port. Resolves when the 
-connection is established.
-Can be called again to reconnect, to the same or even a different url.
+Sets up a WebSocket connection to specified url. Resolves when the 
+connection is established. Can be called again to reconnect to any url.
 
 **Parameters**
 
