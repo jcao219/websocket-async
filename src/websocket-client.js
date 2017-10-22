@@ -49,7 +49,7 @@ export default class WebSocketClient {
     
     /**
      * The number of messages available to receive.
-     * @returns The number of queued messages that can be retrieved with {@link WebSocketClient#receive}
+     * @returns The number of queued messages that can be retrieved with {@link #receive}
      */
     get dataAvailable(): number {
         return this._receiveDataQueue.length;
