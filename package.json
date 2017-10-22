@@ -1,6 +1,6 @@
 {
   "name": "websocket-async",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An async/await WebSocket client for browsers",
   "module": "dist/websocket-async.esm.js",
   "browser": "dist/websocket-async.umd.js",
@@ -14,6 +14,10 @@
     "build": "rollup -c",
     "docs": "documentation build src/** -f md -o README.md && documentation build src/** -f html -o docs"
   },
+  "files": [
+    "dist/*.js",
+    "README.md"
+  ],
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.1",
