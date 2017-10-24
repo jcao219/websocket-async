@@ -20,9 +20,9 @@ An asynchronous WebSocket client.
 // Set up connection.
 const webSocketClient = new WebSocketClient;
 // Connect.
-await webSocketClient.connect("ws://www.example.com/", 9000);
+await webSocketClient.connect('ws://www.example.com/');
 // Send is synchronous.
-webSocketClient.send("Hello!");
+webSocketClient.send('Hello!');
 // Receive is asynchronous.
 console.log(await webSocketClient.receive());
 // See if there are any more messages received.

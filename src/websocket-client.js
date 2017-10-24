@@ -6,9 +6,9 @@
  * // Set up connection.
  * const webSocketClient = new WebSocketClient;
  * // Connect.
- * await webSocketClient.connect("ws://www.example.com/", 9000);
+ * await webSocketClient.connect('ws://www.example.com/');
  * // Send is synchronous.
- * webSocketClient.send("Hello!");
+ * webSocketClient.send('Hello!');
  * // Receive is asynchronous.
  * console.log(await webSocketClient.receive());
  * // See if there are any more messages received.
@@ -20,19 +20,14 @@
  */
 export default class WebSocketClient {
 
-    /** @private */
     _socket: WebSocket;
 
-    /** @private */
     _closeEvent: ?CloseEvent;
 
-    /** @private */
     _receiveCallbacksQueue: Array<{ resolve: (data: any) => void, reject: (reason: any) => void }>;
 
-    /** @private */
     _receiveDataQueue: Array<any>;
     
-    /** @public */
     constructor() {
         this._reset();
     }
@@ -58,14 +53,14 @@ export default class WebSocketClient {
      * Sets up a WebSocket connection to specified url. Resolves when the 
      * connection is established. Can be called again to reconnect to any url.
      */
-    async connect(url: string, protocols?: string): Promise<void> {
-        await this.disconnect();
-        this._reset();
+    connect(url: string, protocols?: string): Promise<void> {
+        return this.disconnect().then(() => {
+            this._reset();
 
-        this._socket = new WebSocket(url, protocols);
-        this._socket.binaryType = 'arraybuffer';
-
-        await this._setupListenersOnConnect();
+            this._socket = new WebSocket(url, protocols);
+            this._socket.binaryType = 'arraybuffer';
+            return this._setupListenersOnConnect();
+        });
     }
 
     /**
@@ -76,7 +71,7 @@ export default class WebSocketClient {
         if (!this.connected) {
             throw this._closeEvent || new Error('Not connected.');
         }
-        
+
         this._socket.send(data);
     }
 
@@ -87,20 +82,20 @@ export default class WebSocketClient {
      * or rejects if disconnected.
      * @returns A promise that resolves with the data received.
      */
-    async receive(): Promise<any> {
+    receive(): Promise<any> {
         if (this._receiveDataQueue.length !== 0) {
-            return this._receiveDataQueue.shift();
+            return Promise.resolve(this._receiveDataQueue.shift());
         }
 
         if (!this.connected) {
-            throw this._closeEvent || new Error('Not connected.');
+            return Promise.reject(this._closeEvent || new Error('Not connected.'));
         }
 
         const receivePromise: Promise<any> = new Promise((resolve, reject) => {
             this._receiveCallbacksQueue.push({ resolve, reject });
         });
 
-        return await receivePromise;
+        return receivePromise;
     }
 
     /**
@@ -108,23 +103,23 @@ export default class WebSocketClient {
      * Returns a promise that will never reject.
      * The promise resolves once the WebSocket connection is closed.
      */
-    async disconnect(code?: number, reason?: string): Promise<?CloseEvent> {
-        if (!this.connected) {
-            return this._closeEvent;
+    disconnect(code?: number, reason?: string): Promise<?CloseEvent> {
+        if(!this.connected) {
+            return Promise.resolve(this._closeEvent);
         }
 
-        return await new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             // It's okay to call resolve/reject multiple times in a promise.
-            const callbacks = { 
+            const callbacks = {
                 resolve: dummy => {
                     // Make sure this object always stays in the queue
                     // until callbacks.reject() (which is resolve) is called.
                     this._receiveCallbacksQueue.push(callbacks);
                 },
-                
+
                 reject: resolve
             };
-            
+
             this._receiveCallbacksQueue.push(callbacks);
             // After this, we will imminently get a close event.
             // Therefore, this promise will resolve.
@@ -136,10 +131,10 @@ export default class WebSocketClient {
      * Sets up the event listeners, which do the bulk of the work.
      * @private
      */
-    async _setupListenersOnConnect(): Promise<void> {
+    _setupListenersOnConnect(): Promise<void> {
         const socket = this._socket;
 
-        await new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
 
             const handleMessage: EventListener = event => {
                 const messageEvent: MessageEvent = ((event: any): MessageEvent);
@@ -150,15 +145,15 @@ export default class WebSocketClient {
                     this._receiveCallbacksQueue.shift().resolve(messageEvent.data);
                     return;
                 }
-                
+
                 this._receiveDataQueue.push(messageEvent.data);
             };
 
             const handleOpen: EventListener = event => {
                 socket.addEventListener('message', handleMessage);
-                socket.addEventListener('close', event => { 
+                socket.addEventListener('close', event => {
                     this._closeEvent = ((event: any): CloseEvent);
-                    
+
                     // Whenever a close event fires, the socket is effectively dead.
                     // It's impossible for more messages to arrive.
                     // If there are any promises waiting for messages, reject them.
@@ -173,7 +168,7 @@ export default class WebSocketClient {
             socket.addEventListener('open', handleOpen);
         });
     }
-    
+
     /**
      * @private
      */
