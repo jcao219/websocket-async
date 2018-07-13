@@ -5,6 +5,7 @@
   "module": "dist/websocket-async.esm.js",
   "browser": "dist/websocket-async.umd.js",
   "main": "lib/websocket-client.js",
+  "types": "lib/index.d.ts",
   "author": "Jimmy Cao",
   "repository": {
     "type": "git",
@@ -12,11 +13,12 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "yarn run build:dist && yarn run build:lib && yarn run build:flow && yarn run build:docs",
+    "build": "yarn run build:dist && yarn run build:lib && yarn run build:flow && yarn run build:ts && yarn run build:docs",
     "build:dist": "rollup -c",
     "build:lib": "babel -d lib src",
     "build:flow": "flow-copy-source -v src lib",
-    "build:docs": "documentation build src/** -f md -o README.md && documentation build src/** -f html -o docs"
+    "build:docs": "documentation build src/** -f md -o README.md && documentation build src/** -f html -o docs",
+    "build:ts": "copyfiles -f src/index.d.ts lib"
   },
   "files": [
     "dist/*.js",
@@ -41,5 +43,7 @@
     "rollup-plugin-uglify": "^2.0.1",
     "uglify-es": "^3.1.5"
   },
-  "dependencies": {}
+  "dependencies": {
+    "copyfiles": "^2.0.0"
+  }
 }
